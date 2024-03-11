@@ -35,11 +35,17 @@ export default function Page() {
             className="hidden md:block"
             alt="screenshot"
           />
-          <Image src="/hero-mobile.png" width={560} height={620} className='block md:hidden' alt='screenshot on small device'/>
+          <Image
+            src="/hero-mobile.png"
+            width={560}
+            height={620}
+            className="block md:hidden"
+            alt="screenshot on small device"
+          />
         </div>
-        <div className="h-0 w-0 border-b-[30px] border-l-[20px] border-r-[20px] border-b-black border-l-transparent border-r-transparent" />
-        <p className={`${lusitana.className}`}>jodos</p>
       </div>
+      <div className="h-0 w-0 border-b-[30px] border-l-[20px] border-r-[20px] border-b-black border-l-transparent border-r-transparent" />
+      <p className={`${lusitana.className}`}>jodos</p>
     </main>
   );
 }
