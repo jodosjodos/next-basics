@@ -6,7 +6,6 @@ const {
   users,
 } = require('../app/lib/placeholder-data.js');
 const bcrypt = require('bcrypt');
-
 async function seedUsers(client) {
   try {
     await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
@@ -19,7 +18,6 @@ async function seedUsers(client) {
         password TEXT NOT NULL
       );
     `;
-
     console.log(`Created "users" table`);
 
     // Insert data into the "users" table
