@@ -1,13 +1,18 @@
 // Import PrismaClient
 import { PrismaClient } from '@prisma/client';
-
+import {unstable_noStore as noStore} from "next/cache"
+const dynamic = "forc"
 // Initialize PrismaClient
 const prisma = new PrismaClient();
 
 // Update fetchRevenue function
 export async function fetchRevenue() {
   try {
+    noStore()
+    console.log('Fetching revenue data...');
+    await new Promise((resolve) => setTimeout(resolve, 3000));
     const revenueData = await prisma.revenue.findMany();
+    console.log('Data fetch completed after 3 seconds.');
     return revenueData;
   } catch (error) {
     console.error('Database Error:', error);
@@ -18,6 +23,9 @@ export async function fetchRevenue() {
 // Update fetchLatestInvoices function
 export async function fetchLatestInvoices() {
   try {
+    noStore()
+    console.log('Fetching revenue data...');
+    await new Promise((resolve) => setTimeout(resolve, 3000));
     const latestInvoices = await prisma.invoice.findMany({
       select: {
         id: true,
@@ -35,6 +43,7 @@ export async function fetchLatestInvoices() {
       orderBy: { date: 'desc' },
       take: 5,
     });
+    console.log('Data fetch completed after 3 seconds.');
     return latestInvoices;
   } catch (error) {
     console.error('Database Error:', error);
@@ -44,6 +53,9 @@ export async function fetchLatestInvoices() {
 // Update fetchCardData function
 export async function fetchCardData() {
   try {
+    noStore()
+    console.log('Fetching revenue data...');
+    await new Promise((resolve) => setTimeout(resolve, 3000));
     const numberOfInvoices = await prisma.invoice.count();
     const numberOfCustomers = await prisma.customer.count();
     const totalPaidInvoices = await prisma.invoice.aggregate({
@@ -62,7 +74,7 @@ export async function fetchCardData() {
         status: 'pending',
       },
     });
-
+    console.log('Data fetch completed after 3 seconds.');
     return {
       numberOfCustomers,
       numberOfInvoices,
@@ -74,17 +86,20 @@ export async function fetchCardData() {
     throw new Error('Failed to fetch card data.');
   }
 }
-const ITEMS_PER_PAGE = 6;
 
 // Update fetchFilteredInvoices function
 export async function fetchFilteredInvoices(
   query: string,
   currentPage: number,
 ) {
+  noStore()
+
   const ITEMS_PER_PAGE = 6;
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
+    console.log('Fetching revenue data...');
+    await new Promise((resolve) => setTimeout(resolve, 3000));
     const filteredInvoices = await prisma.invoice.findMany({
       where: {
         OR: [
@@ -107,7 +122,7 @@ export async function fetchFilteredInvoices(
       take: ITEMS_PER_PAGE,
       skip: offset,
     });
-
+console.log('Data fetch completed after 3 seconds.');
     return filteredInvoices;
   } catch (error) {
     console.error('Database Error:', error);
@@ -117,6 +132,9 @@ export async function fetchFilteredInvoices(
 // Update fetchInvoicesPages function
 export async function fetchInvoicesPages(query: string) {
   try {
+    noStore()
+    console.log('Fetching revenue data...');
+    await new Promise((resolve) => setTimeout(resolve, 3000));
     const count = await prisma.invoice.count({
       where: {
         OR: [
@@ -128,7 +146,7 @@ export async function fetchInvoicesPages(query: string) {
       },
     });
     const ITEMS_PER_PAGE = 6;
-
+    console.log('Data fetch completed after 3 seconds.');
     const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
     return totalPages;
   } catch (error) {
@@ -140,6 +158,9 @@ export async function fetchInvoicesPages(query: string) {
 // Update fetchInvoiceById function
 export async function fetchInvoiceById(id: string) {
   try {
+    noStore()
+    console.log('Fetching revenue data...');
+    await new Promise((resolve) => setTimeout(resolve, 3000));
     const invoice = await prisma.invoice.findUnique({
       where: {
         id: id,
@@ -149,7 +170,7 @@ export async function fetchInvoiceById(id: string) {
     if (!invoice) {
       throw new Error('Invoice not found.');
     }
-
+    console.log('Data fetch completed after 3 seconds.');
     return invoice;
   } catch (error) {
     console.error('Database Error:', error);
