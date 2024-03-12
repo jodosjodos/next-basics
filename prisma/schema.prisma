@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Define the User model
+model User {
+  id       String @id @default(uuid()) // UUID type in PostgreSQL
+  name     String
+  email    String @unique
+  password String
+}
+
+// Define the Customer model
+model Customer {
+  id       String    @id @default(uuid()) // UUID type in PostgreSQL
+  name     String
+  email    String
+  imageUrl String
+  invoices Invoice[] // Renamed from "Invoice" to "invoices"
+}
+
+// Define the Invoice model
+model Invoice {
+  id         String   @id @default(uuid()) 
+  customerId String
+  amount     Int      // Corrected to Int type
+  status     String   // Change to enum type or validate values elsewhere
+  date       DateTime 
+  customer   Customer @relation(fields: [customerId], references: [id])
+}
+
+// Define the Revenue model
+model Revenue {
+  month   String @id // Assuming month is unique
+  revenue Int
+}
