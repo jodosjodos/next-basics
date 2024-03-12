@@ -103,7 +103,7 @@ export async function fetchFilteredInvoices(
     const filteredInvoices = await prisma.invoice.findMany({
       where: {
         OR: [
-          { amount: parseInt(query) || undefined }, // Parse query to number for amount
+          { amount:Number(query)|| undefined }, // Parse query to number for amount
           { status: { contains: query } },
           { customer: { name: { contains: query } } },
           { customer: { email: { contains: query } } },
@@ -112,6 +112,7 @@ export async function fetchFilteredInvoices(
       include: {
         customer: {
           select: {
+            id:true,
             name: true,
             email: true,
             imageUrl: true,
