@@ -21,7 +21,7 @@ export async function fetchLatestInvoices() {
     const latestInvoices = await prisma.invoice.findMany({
       select: {
         id: true,
-        amount: true,
+        amount: true, // Convert amount to string
         date: true,
         status: true,
         customer: {
@@ -41,7 +41,6 @@ export async function fetchLatestInvoices() {
     throw new Error('Failed to fetch the latest invoices.');
   }
 }
-
 // Update fetchCardData function
 export async function fetchCardData() {
   try {
@@ -67,8 +66,8 @@ export async function fetchCardData() {
     return {
       numberOfCustomers,
       numberOfInvoices,
-      totalPaidInvoices: totalPaidInvoices._sum.amount,
-      totalPendingInvoices: totalPendingInvoices._sum.amount,
+      totalPaidInvoices: totalPaidInvoices?._sum?.amount??0,
+      totalPendingInvoices: totalPendingInvoices?._sum?.amount??0,
     };
   } catch (error) {
     console.error('Database Error:', error);
