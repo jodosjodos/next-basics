@@ -1,14 +1,29 @@
 // Import PrismaClient
 import { PrismaClient } from '@prisma/client';
-import {unstable_noStore as noStore} from "next/cache"
-const dynamic = "forc"
+import { unstable_noStore as noStore } from 'next/cache';
+const dynamic = 'forc';
 // Initialize PrismaClient
 const prisma = new PrismaClient();
+
+//fetch customers
+export async function fetchCustomers() {
+  try {
+    noStore();
+    console.log('fetch customers');
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const customers = await prisma.customer.findMany();
+    console.log('Data fetch completed after 3 seconds.');
+    return customers;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch revenue data.');
+  }
+}
 
 // Update fetchRevenue function
 export async function fetchRevenue() {
   try {
-    noStore()
+    noStore();
     console.log('Fetching revenue data...');
     await new Promise((resolve) => setTimeout(resolve, 3000));
     const revenueData = await prisma.revenue.findMany();
@@ -23,7 +38,7 @@ export async function fetchRevenue() {
 // Update fetchLatestInvoices function
 export async function fetchLatestInvoices() {
   try {
-    noStore()
+    noStore();
     console.log('Fetching revenue data...');
     await new Promise((resolve) => setTimeout(resolve, 3000));
     const latestInvoices = await prisma.invoice.findMany({
@@ -53,7 +68,7 @@ export async function fetchLatestInvoices() {
 // Update fetchCardData function
 export async function fetchCardData() {
   try {
-    noStore()
+    noStore();
     console.log('Fetching revenue data...');
     await new Promise((resolve) => setTimeout(resolve, 3000));
     const numberOfInvoices = await prisma.invoice.count();
@@ -78,8 +93,8 @@ export async function fetchCardData() {
     return {
       numberOfCustomers,
       numberOfInvoices,
-      totalPaidInvoices: totalPaidInvoices?._sum?.amount??0,
-      totalPendingInvoices: totalPendingInvoices?._sum?.amount??0,
+      totalPaidInvoices: totalPaidInvoices?._sum?.amount ?? 0,
+      totalPendingInvoices: totalPendingInvoices?._sum?.amount ?? 0,
     };
   } catch (error) {
     console.error('Database Error:', error);
@@ -92,7 +107,7 @@ export async function fetchFilteredInvoices(
   query: string,
   currentPage: number,
 ) {
-  noStore()
+  noStore();
 
   const ITEMS_PER_PAGE = 6;
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -103,7 +118,7 @@ export async function fetchFilteredInvoices(
     const filteredInvoices = await prisma.invoice.findMany({
       where: {
         OR: [
-          { amount:Number(query)|| undefined }, // Parse query to number for amount
+          { amount: Number(query) || undefined }, // Parse query to number for amount
           { status: { contains: query } },
           { customer: { name: { contains: query } } },
           { customer: { email: { contains: query } } },
@@ -112,7 +127,7 @@ export async function fetchFilteredInvoices(
       include: {
         customer: {
           select: {
-            id:true,
+            id: true,
             name: true,
             email: true,
             imageUrl: true,
@@ -123,7 +138,7 @@ export async function fetchFilteredInvoices(
       take: ITEMS_PER_PAGE,
       skip: offset,
     });
-console.log('Data fetch completed after 3 seconds.');
+    console.log('Data fetch completed after 3 seconds.');
     return filteredInvoices;
   } catch (error) {
     console.error('Database Error:', error);
@@ -133,13 +148,13 @@ console.log('Data fetch completed after 3 seconds.');
 // Update fetchInvoicesPages function
 export async function fetchInvoicesPages(query: string) {
   try {
-    noStore()
+    noStore();
     console.log('Fetching revenue data...');
     await new Promise((resolve) => setTimeout(resolve, 3000));
     const count = await prisma.invoice.count({
       where: {
         OR: [
-          { amount:  parseInt( query) || undefined },
+          { amount: parseInt(query) || undefined },
           { status: { contains: query } },
           { customer: { name: { contains: query } } },
           { customer: { email: { contains: query } } },
@@ -159,7 +174,7 @@ export async function fetchInvoicesPages(query: string) {
 // Update fetchInvoiceById function
 export async function fetchInvoiceById(id: string) {
   try {
-    noStore()
+    noStore();
     console.log('Fetching revenue data...');
     await new Promise((resolve) => setTimeout(resolve, 3000));
     const invoice = await prisma.invoice.findUnique({
