@@ -6,23 +6,46 @@ import { redirect } from 'next/navigation';
 // schema
 const FormSchema = z.object({
   id: z.string(),
-  customerId: z.string(),
-  amount: z.coerce.number(),
-  status: z.enum(['pending', 'paid']),
+  customerId: z.string({
+    invalid_type_error: 'please select a customer',
+  }),
+  amount: z.coerce
+    .number()
+    .gt(0, { message: 'amount must be greater than zero' }),
+  status: z.enum(['pending', 'paid'], {
+    invalid_type_error: 'please select  status of invoice',
+  }),
   date: z.date(),
 });
 
+//  state
+export type State = {
+  errors?: {
+    customerId?: string[];
+    amount?: string[];
+    status?: string[];
+  };
+  message?: string | null;
+};
+
 const prisma = new PrismaClient();
 const CreateInvoice = FormSchema.omit({ id: true, date: true });
-export async function createInvoice(invoice: FormData) {
+export async function createInvoice(prevData: State, invoice: FormData) {
+  const validFields = CreateInvoice.safeParse({
+    customerId: invoice.get('customerId'),
+    amount: invoice.get('amount'),
+    status: invoice.get('status'),
+  });
+  if (!validFields.success) {
+    return {
+      errors: validFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Create Invoice.',
+    };
+  }
+  const { amount, customerId, status } = validFields.data;
+  const amountInCent = amount * 100;
+  const date = new Date().toISOString();
   try {
-    const { customerId, amount, status } = CreateInvoice.parse({
-      customerId: invoice.get('customerId'),
-      amount: invoice.get('amount'),
-      status: invoice.get('status'),
-    });
-    const amountInCent = amount * 100;
-    const date = new Date().toISOString();
     await prisma.invoice.create({
       data: {
         amount: amountInCent,
