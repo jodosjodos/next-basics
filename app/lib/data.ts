@@ -1,5 +1,5 @@
 // Import PrismaClient
-import { PrismaClient } from '@prisma/client';
+import { Invoice, PrismaClient } from '@prisma/client';
 import { unstable_noStore as noStore } from 'next/cache';
 const dynamic = 'forc';
 // Initialize PrismaClient
@@ -193,4 +193,49 @@ export async function fetchInvoiceById(id: string) {
   } catch (error) {
     console.error('Database Error:', error);
   }
+}
+
+export async function getFormattedCustomers() {
+  try {
+    noStore()
+    const customers = await prisma.customer.findMany({
+      include: {
+        invoices: true,
+      },
+    });
+
+    const formattedCustomers = customers.map(customer => ({
+      id: customer.id,
+      name: customer.name,
+      email: customer.email,
+      image_url: customer.imageUrl, // Renamed to match the type
+      total_invoices: customer.invoices.length,
+      total_pending: calculateTotalPending(customer.invoices), // Assuming you have a function for this
+      total_paid: calculateTotalPaid(customer.invoices), // Assuming you have a function for this
+    }));
+
+    return formattedCustomers;
+  } catch (error:any) {
+    throw new Error(`Error fetching formatted customers: ${error.message}`);
+  }
+}
+
+// Function to calculate total pending amount
+function calculateTotalPending(invoices:Invoice[]) {
+  return invoices.reduce((totalPending, invoice) => {
+    if (invoice.status === 'pending') { // Assuming 'pending' is the status for unpaid invoices
+      totalPending += invoice.amount;
+    }
+    return totalPending;
+  }, 0).toFixed(2);
+}
+
+// Function to calculate total paid amount
+function calculateTotalPaid(invoices:Invoice[]) {
+  return invoices.reduce((totalPaid, invoice) => {
+    if (invoice.status === 'paid') { // Assuming 'paid' is the status for paid invoices
+      totalPaid += invoice.amount;
+    }
+    return totalPaid;
+  }, 0).toFixed(2);
 }

@@ -1,7 +1,11 @@
-import React from 'react'
+import {  getFormattedCustomers } from '@/app/lib/data';
+import CustomersTable from '@/app/ui/customers/table';
 
-export default function page() {
+export default async function page() {
+const formattedCustomers = await getFormattedCustomers()
   return (
-    <div>Custom page</div>
-  )
+    <div>
+      <CustomersTable customers={formattedCustomers} />
+    </div>
+  );
 }
