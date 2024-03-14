@@ -1,6 +1,7 @@
 // Import PrismaClient
 import { Invoice, PrismaClient } from '@prisma/client';
 import { unstable_noStore as noStore } from 'next/cache';
+import { InvoiceForm } from './definitions';
 const dynamic = 'forc';
 // Initialize PrismaClient
 const prisma = new PrismaClient();
@@ -172,7 +173,7 @@ export async function fetchInvoicesPages(query: string) {
 }
 
 // Update fetchInvoiceById function
-export async function fetchInvoiceById(id: string) {
+export async function fetchInvoiceById(id: string):Promise<InvoiceForm | undefined> {
   try {
     noStore();
     console.log('Fetching revenue data...');
@@ -182,14 +183,18 @@ export async function fetchInvoiceById(id: string) {
         id: id,
       },
     });
-
-    // if (!invoice) {
-    //   throw new Error('Invoice not found.');
-    // }
+    if (!invoice) {
+      throw new Error('Invoice not found.');
+    }
     console.log(invoice);
 
     console.log('Data fetch completed after 3 seconds.');
-    return invoice;
+    return {
+      id: invoice.id,
+      customer_id: invoice.customerId, 
+      amount: invoice.amount,
+      status: invoice.status as 'pending' | 'paid', 
+    };
   } catch (error) {
     console.error('Database Error:', error);
   }

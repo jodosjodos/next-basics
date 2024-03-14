@@ -6,8 +6,9 @@ import { notFound } from 'next/navigation';
 export default async function Page({params}:{params:{id:string}}) {
   const id = params.id;
   const [unFormattedInvoices,customers]= await Promise.all([fetchInvoiceById(id),fetchCustomers()])
-  const invoice = unFormattedInvoices
+  let invoice = unFormattedInvoices;
   if(!invoice){ notFound()}
+ 
     return (
     <main>
       <Breadcrumbs
