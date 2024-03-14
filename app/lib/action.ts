@@ -62,13 +62,24 @@ export async function createInvoice(prevData: State, invoice: FormData) {
 }
 
 const UpdateInvoice = FormSchema.omit({ id: true, date: true });
-export async function updateInvoice(id: string, invoice: FormData) {
+export async function updateInvoice(
+  id: string,
+  prevState: State,
+  invoice: FormData,
+) {
   try {
-    const { customerId, amount, status } = UpdateInvoice.parse({
+    const validFields = UpdateInvoice.safeParse({
       customerId: invoice.get('customerId'),
       amount: invoice.get('amount'),
       status: invoice.get('status'),
     });
+    if (!validFields.success) {
+      return {
+        message: 'error during  editing invoice',
+        errors: validFields.error.flatten().fieldErrors,
+      };
+    }
+    const { amount, customerId, status } = validFields.data;
     const amountCents = amount * 100;
     await prisma.invoice.update({
       where: {
