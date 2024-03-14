@@ -15,53 +15,64 @@ const FormSchema = z.object({
 const prisma = new PrismaClient();
 const CreateInvoice = FormSchema.omit({ id: true, date: true });
 export async function createInvoice(invoice: FormData) {
-  const { customerId, amount, status } = CreateInvoice.parse({
-    customerId: invoice.get('customerId'),
-    amount: invoice.get('amount'),
-    status: invoice.get('status'),
-  });
-  const amountInCent = amount * 100;
-  const date = new Date().toISOString();
-  await prisma.invoice.create({
-    data: {
-      amount: amountInCent,
-      customerId,
-      status,
-      date,
-    },
-  });
+  try {
+    const { customerId, amount, status } = CreateInvoice.parse({
+      customerId: invoice.get('customerId'),
+      amount: invoice.get('amount'),
+      status: invoice.get('status'),
+    });
+    const amountInCent = amount * 100;
+    const date = new Date().toISOString();
+    await prisma.invoice.create({
+      data: {
+        amount: amountInCent,
+        customerId,
+        status,
+        date,
+      },
+    });
+  } catch (error) {
+    return { message: 'error during creating invoice' };
+  }
   revalidatePath('/dashboard/invoices');
   redirect('/dashboard/invoices');
 }
 
 const UpdateInvoice = FormSchema.omit({ id: true, date: true });
 export async function updateInvoice(id: string, invoice: FormData) {
-  const { customerId, amount, status } = UpdateInvoice.parse({
-    customerId: invoice.get('customerId'),
-    amount: invoice.get('amount'),
-    status: invoice.get('status'),
-  });
-  const amountCents = amount * 100;
-  await prisma.invoice.update({
-    where: {
-      id: id,
-    },
-    data: {
-      customerId,
-      amount: amountCents,
-      status,
-    },
-  });
+  try {
+    const { customerId, amount, status } = UpdateInvoice.parse({
+      customerId: invoice.get('customerId'),
+      amount: invoice.get('amount'),
+      status: invoice.get('status'),
+    });
+    const amountCents = amount * 100;
+    await prisma.invoice.update({
+      where: {
+        id: id,
+      },
+      data: {
+        customerId,
+        amount: amountCents,
+        status,
+      },
+    });
+  } catch (error) {
+    return { message: 'error during creating invoice' };
+  }
   revalidatePath('/dashboard/invoices');
   redirect('/dashboard/invoices');
 }
 
 export async function deleteInvoice(id: string) {
-  await prisma.invoice.delete({
-    where: {
-      id,
-    },
-  });
-  revalidatePath('/dashboard/invoices');
-
+  try {
+    await prisma.invoice.delete({
+      where: {
+        id,
+      },
+    });
+    revalidatePath('/dashboard/invoices');
+  } catch (error) {
+    return { message: 'error during creating invoice' };
+  }
 }

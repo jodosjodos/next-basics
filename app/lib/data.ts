@@ -183,9 +183,11 @@ export async function fetchInvoiceById(id: string) {
       },
     });
 
-    if (!invoice) {
-      throw new Error('Invoice not found.');
-    }
+    // if (!invoice) {
+    //   throw new Error('Invoice not found.');
+    // }
+    console.log(invoice);
+
     console.log('Data fetch completed after 3 seconds.');
     return invoice;
   } catch (error) {
