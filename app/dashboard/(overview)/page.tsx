@@ -1,7 +1,6 @@
 import CardWrapper, { Card } from '@/app/ui/dashboard/cards';
 import RevenueChart from '@/app/ui/dashboard/revenue-chart';
 import { lusitana } from '@/app/ui/fonts';
-import { fetchCardData } from '../../lib/data';
 import LatestInvoices from '../../ui/dashboard/latest-invoices';
 import { Suspense } from 'react';
 import {
@@ -12,7 +11,6 @@ import {
 
 export default async function Page() {
   //card data
-
   return (
     <main>
       <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
